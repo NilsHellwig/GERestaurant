@@ -1,8 +1,4 @@
-import constants
 import json
-
-# This function double-checks if there are any training examples that are also used for testing
-# - this should for sure not be the case, however I'm checking it here once more
 
 
 def check_for_duplicate_ids(train_dataset, test_dataset):
@@ -26,17 +22,34 @@ def check_for_duplicate_ids(train_dataset, test_dataset):
 
 
 def load_dataset_folds(random):
+
     # 1. Load Dataset
-    with open(f'../data/dataset_filtered.json', 'r') as json_datei:
+    with open('../data/dataset_filtered.json', 'r') as json_datei:
         dataset = json.load(json_datei)
-    
-    # 2. Create Splits
-    print(len(dataset))
-    raise KeyError
 
-    print("Train:", len(train_dataset[0]), len(train_dataset))
-    print("Test:", len(test_dataset[0]), len(test_dataset))
+    # 2. Shuffle Dataset
+    random.shuffle(dataset)
 
-    check_for_duplicate_ids(train_dataset, test_dataset)
+    # 3. Split dataset into folds
+    fold_size = len(dataset) // 5
+    folds = [dataset[i*fold_size:(i+1)*fold_size] for i in range(5)]
 
-    return train_dataset, test_dataset
+    train_datasets = []
+    test_datasets = []
+
+    for i in range(5):
+        # Use ith fold as test set
+        test_dataset = folds[i]
+
+        # Use other folds for training
+        train_dataset = []
+        for j in range(5):
+            if j != i:
+                train_dataset.extend(folds[j])
+
+        train_datasets.append(train_dataset)
+        test_datasets.append(test_dataset)
+
+    check_for_duplicate_ids(train_datasets, test_datasets)
+
+    return train_datasets, test_datasets
