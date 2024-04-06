@@ -13,16 +13,16 @@ EVALUATE_AFTER_EPOCH = False
 
 # ------------------ ACD ------------------
 MODEL_NAME_ACD = "deepset/gbert-large"
-LEARNING_RATE_ACD = 5e-06
-BATCH_SIZE_ACD = 32
+LEARNING_RATE_ACD = 5e-05
+BATCH_SIZE_ACD = 16
 MAX_TOKENS_ACD = 256
 OUTPUT_DIR_ACD = "outputs/output_ACD"
 EPOCHS_ACD = 5
 
 # ------------------ ACSA ------------------
 MODEL_NAME_ACSA = "deepset/gbert-large"
-LEARNING_RATE_ACSA = 5e-06
-BATCH_SIZE_ACSA = 32
+LEARNING_RATE_ACSA = 5e-05
+BATCH_SIZE_ACSA = 16
 MAX_TOKENS_ACSA = 256
 OUTPUT_DIR_ACSA = "outputs/output_ACSA"
 EPOCHS_ACSA = 5
