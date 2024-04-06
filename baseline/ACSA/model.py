@@ -1,26 +1,27 @@
-from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer, DataCollatorWithPadding, EarlyStoppingCallback
-from ACD.evaluation import compute_metrics_ACD
+from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer, EarlyStoppingCallback
+from transformers import DataCollatorWithPadding
+from ACSA.evaluation import compute_metrics_ACSA
 import constants
 import torch
 
 
-def create_model_ACD():
+def create_model_ACSA():
     return AutoModelForSequenceClassification.from_pretrained(
-        pretrained_model_name_or_path=constants.MODEL_NAME_ACD,
-        num_labels=len(constants.ASPECT_CATEGORIES),
+        pretrained_model_name_or_path=constants.MODEL_NAME_ACSA,
+        num_labels=len(constants.ASPECT_CATEGORY_POLARITIES),
         problem_type="multi_label_classification"
     ).to(torch.device(constants.DEVICE))
 
 
-def get_trainer_ACD(train_data, test_data, tokenizer, results, cross_idx):
+def get_trainer_ACSA(train_data, test_data, tokenizer, results, cross_idx):
     # Define Arguments
     training_args = TrainingArguments(
-        output_dir=constants.OUTPUT_DIR_ACD+"_" +
+        output_dir=constants.OUTPUT_DIR_ACSA+"_" +
         results["TARGET"]+"_"+str(cross_idx),
-        learning_rate=constants.LEARNING_RATE_ACD,
-        num_train_epochs=constants.EPOCHS_ACD,
-        per_device_train_batch_size=constants.BATCH_SIZE_ACD,
-        per_device_eval_batch_size=constants.BATCH_SIZE_ACD,
+        learning_rate=constants.LEARNING_RATE_ACSA,
+        num_train_epochs=constants.EPOCHS_ACSA,
+        per_device_train_batch_size=constants.BATCH_SIZE_ACSA,
+        per_device_eval_batch_size=constants.BATCH_SIZE_ACSA,
         save_strategy="epoch" if constants.EVALUATE_AFTER_EPOCH == True else "no",
         logging_dir="logs",
         logging_steps=100,
@@ -34,16 +35,16 @@ def get_trainer_ACD(train_data, test_data, tokenizer, results, cross_idx):
         seed=constants.RANDOM_SEED
     )
 
-    compute_metrics_ACD_fcn = compute_metrics_ACD(results, cross_idx)
+    compute_metrics_ACSA_fcn = compute_metrics_ACSA(results, cross_idx)
 
     trainer = Trainer(
-        model_init=create_model_ACD,
+        model_init=create_model_ACSA,
         args=training_args,
         train_dataset=train_data,
         eval_dataset=test_data,
         data_collator=DataCollatorWithPadding(tokenizer=tokenizer),
         tokenizer=tokenizer,
-        compute_metrics=compute_metrics_ACD_fcn,
+        compute_metrics=compute_metrics_ACSA_fcn
     )
 
     return trainer

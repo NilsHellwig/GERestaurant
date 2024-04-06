@@ -1,16 +1,15 @@
-from transformers import AutoTokenizer
-from helper import format_seconds_to_time_string, get_hyperparameters
-from ACD.preprocessing import preprocess_data_ACD
-from ACD.model import get_trainer_ACD
+from ACSA.preprocessing import preprocess_data_ACSA
+from helper import format_seconds_to_time_string
+from ACSA.model import get_trainer_ACSA
 from transformers import AutoTokenizer
 import subprocess
 import numpy as np
 import constants
-import shutil
 import time
+import shutil
 
 
-def train_ACD_model(TARGET, train_dataset, test_dataset):
+def train_ACSA_model(TARGET, train_dataset, test_dataset):
     results = {
         "TARGET": TARGET,
         "single_split_results": []
@@ -21,24 +20,23 @@ def train_ACD_model(TARGET, train_dataset, test_dataset):
     n_samples_test = []
     log_history = {}
 
-    tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_ACD)
-
-    metrics_prefixes = ["accuracy", "hamming_loss", "f1_macro", "f1_micro", "f1_weighted"] + [
-        f"{m}_{ac}" for ac in constants.ASPECT_CATEGORIES for m in ["precision", "recall", "f1", "accuracy"]]
-    metrics_total = {f"{m}": [] for m in metrics_prefixes}
-
     start_time = time.time()
+
+    tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_ACSA)
+    metrics_prefixes = ["accuracy", "hamming_loss",
+                        "f1_macro", "f1_micro", "f1_weighted"]
+    metrics_total = {f"{m}": [] for m in metrics_prefixes}
 
     for cross_idx in range(constants.N_FOLDS):
         # Load Data
-        train_data = preprocess_data_ACD(train_dataset[cross_idx], tokenizer)
-        test_data = preprocess_data_ACD(test_dataset[cross_idx], tokenizer)
+        train_data = preprocess_data_ACSA(train_dataset[cross_idx], tokenizer)
+        test_data = preprocess_data_ACSA(test_dataset[cross_idx], tokenizer)
 
         n_samples_train.append(len(train_data))
         n_samples_test.append(len(test_data))
 
         # Train Model
-        trainer = get_trainer_ACD(
+        trainer = get_trainer_ACSA(
             train_data, test_data, tokenizer, results, cross_idx)
         trainer.train()
 
@@ -58,7 +56,7 @@ def train_ACD_model(TARGET, train_dataset, test_dataset):
 
         loss.append(eval_metrics["eval_loss"])
 
-        path_output = constants.OUTPUT_DIR_ACD + \
+        path_output = constants.OUTPUT_DIR_ACSA + \
             "_" + results["TARGET"]+"_"+str(cross_idx)
         shutil.rmtree(path_output)
 
@@ -70,6 +68,7 @@ def train_ACD_model(TARGET, train_dataset, test_dataset):
 
     results.update({f"eval_{m}": np.mean(
         metrics_total[f"{m}"]) for m in metrics_prefixes})
+
 
     results["runtime"] = runtime
     results["runtime_formatted"] = format_seconds_to_time_string(runtime)
