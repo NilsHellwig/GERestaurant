@@ -23,8 +23,7 @@ def train_ACD_model(TARGET, train_dataset, test_dataset):
 
     tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_ACD)
 
-    metrics_prefixes = ["accuracy", "hamming_loss", "f1_macro", "f1_micro", "f1_weighted"] + [
-        f"{m}_{ac}" for ac in constants.ASPECT_CATEGORIES for m in ["precision", "recall", "f1", "accuracy"]]
+    metrics_prefixes = ["accuracy", "hamming_loss", "f1_macro", "f1_micro", "f1_weighted"]
     metrics_total = {f"{m}": [] for m in metrics_prefixes}
 
     start_time = time.time()
