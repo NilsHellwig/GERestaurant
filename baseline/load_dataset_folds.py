@@ -49,6 +49,8 @@ def load_dataset_folds(random):
 
         train_datasets.append(train_dataset)
         test_datasets.append(test_dataset)
+        print(len(set([tag["tag_with_polarity"] for example in test_dataset for tag in example["tags"]])))
+
 
     check_for_duplicate_ids(train_datasets, test_datasets)
 
