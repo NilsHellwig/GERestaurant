@@ -3,9 +3,11 @@ from transformers import DataCollatorWithPadding
 from ACSA.evaluation import compute_metrics_ACSA
 import constants
 import torch
+import sys
 
 
-def create_model_ACSA(MODEL_TYPE):
+def create_model_ACSA():
+    MODEL_TYPE = sys.argv[2]
     return AutoModelForSequenceClassification.from_pretrained(
         pretrained_model_name_or_path=constants.MODEL_NAME_ACSA + MODEL_TYPE,
         num_labels=len(constants.ASPECT_CATEGORY_POLARITIES),
@@ -13,7 +15,7 @@ def create_model_ACSA(MODEL_TYPE):
     ).to(torch.device(constants.DEVICE))
 
 
-def get_trainer_ACSA(train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx):
+def get_trainer_ACSA(train_data, test_data, tokenizer, results, cross_idx):
     # Define Arguments
     training_args = TrainingArguments(
         output_dir=constants.OUTPUT_DIR_ACSA+"_" +
@@ -38,7 +40,7 @@ def get_trainer_ACSA(train_data, test_data, MODEL_TYPE, tokenizer, results, cros
     compute_metrics_ACSA_fcn = compute_metrics_ACSA(results, cross_idx)
 
     trainer = Trainer(
-        model_init=create_model_ACSA(MODEL_TYPE),
+        model_init=create_model_ACSA,
         args=training_args,
         train_dataset=train_data,
         eval_dataset=test_data,

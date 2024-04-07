@@ -22,7 +22,8 @@ def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
     start_time = time.time()
 
-    tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_ACSA + MODEL_TYPE)
+    tokenizer = AutoTokenizer.from_pretrained(
+        constants.MODEL_NAME_ACSA + MODEL_TYPE)
     metrics_prefixes = ["accuracy", "hamming_loss",
                         "f1_macro", "f1_micro", "f1_weighted"]
     metrics_total = {f"{m}": [] for m in metrics_prefixes}
@@ -37,7 +38,7 @@ def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
         # Train Model
         trainer = get_trainer_ACSA(
-            train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx)
+            train_data, test_data, tokenizer, results, cross_idx)
         trainer.train()
 
         # save log history
@@ -68,7 +69,6 @@ def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
     results.update({f"eval_{m}": np.mean(
         metrics_total[f"{m}"]) for m in metrics_prefixes})
-
 
     results["runtime"] = runtime
     results["runtime_formatted"] = format_seconds_to_time_string(runtime)

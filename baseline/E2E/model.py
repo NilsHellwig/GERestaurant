@@ -22,6 +22,7 @@ import numpy as np
 import constants
 import torch
 # source: https://huggingface.co/transformers/v3.5.1/_modules/transformers/modeling_bert.html
+import sys
 
 
 @add_start_docstrings(
@@ -92,7 +93,8 @@ class BertForSpanCategorizationE2E(BertPreTrainedModel):
         )
 
 
-def create_model_E2E(MODEL_TYPE):
+def create_model_E2E():
+    MODEL_TYPE = sys.argv[2]
     label2id_with_O = constants.LABEL_TO_ID_E2E.copy()
     label2id_with_O["O"] = len(label2id_with_O)
 
@@ -127,7 +129,7 @@ def get_trainer_E2E(train_data, test_data, MODEL_TYPE, tokenizer, results, cross
     compute_metrics_E2E_fcn = compute_metrics_E2E(results, cross_idx)
 
     trainer = Trainer(
-        model_init=create_model_E2E(MODEL_TYPE),
+        model_init=create_model_E2E,
         args=training_args,
         train_dataset=train_data,
         eval_dataset=test_data,

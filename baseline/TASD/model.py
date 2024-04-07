@@ -3,10 +3,12 @@ from TASD.evaluation import compute_metrics_TASD
 from datasets import load_metric
 import constants
 import torch
+import sys
 
 
 def create_model_TASD():
-    return AutoModelForSeq2SeqLM.from_pretrained(constants.MODEL_NAME_TASD).to(constants.DEVICE)
+    MODEL_TYPE = sys.argv[2]
+    return AutoModelForSeq2SeqLM.from_pretrained(constants.MODEL_NAME_TASD + MODEL_TYPE).to(constants.DEVICE)
 
 
 def get_trainer_TASD(train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx):
