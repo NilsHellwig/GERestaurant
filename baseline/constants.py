@@ -1,7 +1,7 @@
 # ------------------ General Settings ------------------
 N_FOLDS = 5
 SPLIT_LOOP = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
-RANDOM_SEED = 49
+RANDOM_SEED = 50
 DEVICE = "cuda"
 ASPECT_CATEGORIES = ["GENERAL-IMPRESSION",
                      "FOOD", "SERVICE", "AMBIENCE", "PRICE"]
@@ -13,19 +13,19 @@ EVALUATE_AFTER_EPOCH = False
 
 # ------------------ ACD ------------------
 MODEL_NAME_ACD = "deepset/gbert-large"
-LEARNING_RATE_ACD = 5e-05
+LEARNING_RATE_ACD = 2e-5
 BATCH_SIZE_ACD = 16
 MAX_TOKENS_ACD = 256
 OUTPUT_DIR_ACD = "outputs/output_ACD"
-EPOCHS_ACD = 5
+EPOCHS_ACD = 3
 
 # ------------------ ACSA ------------------
 MODEL_NAME_ACSA = "deepset/gbert-large"
-LEARNING_RATE_ACSA = 5e-05
+LEARNING_RATE_ACSA = 2e-5
 BATCH_SIZE_ACSA = 16
 MAX_TOKENS_ACSA = 256
 OUTPUT_DIR_ACSA = "outputs/output_ACSA"
-EPOCHS_ACSA = 5
+EPOCHS_ACSA = 3
 
 # ------------------ E2E ------------------
 LABEL_TO_ID_E2E = {'B_POSITIVE': 0,
