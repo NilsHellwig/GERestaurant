@@ -6,10 +6,10 @@ import numpy as np
 import constants
 
 
-def compute_metrics_TASD(results, cross_idx):
+def compute_metrics_TASD(results, cross_idx, MODEL_TYPE):
     def compute_metrics(eval_pred):
         # Evtl später übertragen
-        tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_TASD)
+        tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_TASD + MODEL_TYPE)
         metric = load_metric("rouge")
 
         predictions, labels = eval_pred

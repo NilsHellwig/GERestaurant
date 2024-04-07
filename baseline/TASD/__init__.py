@@ -9,7 +9,7 @@ import shutil
 import time
 
 
-def train_TASD_model(TARGET, train_dataset, test_dataset):
+def train_TASD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
     results_meta = {
         "TARGET": TARGET,
         "single_split_results": []
@@ -25,7 +25,7 @@ def train_TASD_model(TARGET, train_dataset, test_dataset):
 
     start_time = time.time()
 
-    tokenizer = T5Tokenizer.from_pretrained(constants.MODEL_NAME_TASD)
+    tokenizer = T5Tokenizer.from_pretrained(constants.MODEL_NAME_TASD + MODEL_TYPE)
 
     for cross_idx in range(constants.N_FOLDS):
         # Load Data
@@ -46,7 +46,7 @@ def train_TASD_model(TARGET, train_dataset, test_dataset):
 
         # Train Model
         trainer = get_trainer_TASD(
-            train_data, test_data, tokenizer, results_meta, cross_idx)
+            train_data, test_data, MODEL_TYPE, tokenizer, results_meta, cross_idx)
         trainer.train()
 
         # save log history

@@ -9,7 +9,7 @@ def create_model_TASD():
     return AutoModelForSeq2SeqLM.from_pretrained(constants.MODEL_NAME_TASD).to(constants.DEVICE)
 
 
-def get_trainer_TASD(train_data, test_data, tokenizer, results, cross_idx):
+def get_trainer_TASD(train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx):
     args = Seq2SeqTrainingArguments(
         output_dir=constants.OUTPUT_DIR_TASD +
         "_" + results["TARGET"]+str(cross_idx),
@@ -33,7 +33,7 @@ def get_trainer_TASD(train_data, test_data, tokenizer, results, cross_idx):
 
     data_collator = DataCollatorForSeq2Seq(tokenizer)
 
-    compute_metrics_TASD_fcn = compute_metrics_TASD(results, cross_idx)
+    compute_metrics_TASD_fcn = compute_metrics_TASD(results, cross_idx, MODEL_TYPE)
 
     trainer = Seq2SeqTrainer(
         model_init=create_model_TASD,

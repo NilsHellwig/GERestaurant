@@ -18,6 +18,8 @@ import os
 # Parameters
 
 TARGET = sys.argv[1]
+MODEL_TYPE = sys.argv[2]
+
 if TARGET not in ["aspect_category", "aspect_category_sentiment", "end_2_end_absa", "target_aspect_sentiment_detection"]:
     raise ValueError("Error: Not a valid target")
 
@@ -58,20 +60,20 @@ train_dataset, test_dataset = load_dataset_folds(random)
 
 # Load Model
 if TARGET == "aspect_category":
-    results = train_ACD_model(TARGET, train_dataset, test_dataset)
+    results = train_ACD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset)
 
 if TARGET == "aspect_category_sentiment":
-    results = train_ACSA_model(TARGET, train_dataset, test_dataset)
+    results = train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset)
 
 if TARGET == "end_2_end_absa":
-    results = train_E2E_model(TARGET, train_dataset, test_dataset)
+    results = train_E2E_model(TARGET, MODEL_TYPE, train_dataset, test_dataset)
 
 if TARGET == "target_aspect_sentiment_detection":
-    results = train_TASD_model(TARGET, train_dataset, test_dataset)
+    results = train_TASD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset)
 
 # Save Results
-with open(f'results_json/results_{TARGET}.json', 'w') as json_file:
+with open(f'results_json/results_{TARGET}_{MODEL_TYPE}.json', 'w') as json_file:
     json.dump(results, json_file)
 
 df = pd.DataFrame([results])
-df.to_csv(f'results_csv/results_{TARGET}.csv', index=False)
+df.to_csv(f'results_csv/results_{TARGET}_{MODEL_TYPE}.csv', index=False)

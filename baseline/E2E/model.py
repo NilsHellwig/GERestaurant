@@ -92,17 +92,17 @@ class BertForSpanCategorizationE2E(BertPreTrainedModel):
         )
 
 
-def create_model_E2E():
+def create_model_E2E(MODEL_TYPE):
     label2id_with_O = constants.LABEL_TO_ID_E2E.copy()
     label2id_with_O["O"] = len(label2id_with_O)
 
     id2label_with_O = constants.ID_TO_LABEL_E2E.copy()
     id2label_with_O[len(id2label_with_O)] = "O"
 
-    return BertForSpanCategorizationE2E.from_pretrained(constants.MODEL_NAME_E2E, id2label=id2label_with_O, label2id=label2id_with_O)
+    return BertForSpanCategorizationE2E.from_pretrained(constants.MODEL_NAME_E2E + MODEL_TYPE, id2label=id2label_with_O, label2id=label2id_with_O)
 
 
-def get_trainer_E2E(train_data, test_data, tokenizer, results, cross_idx):
+def get_trainer_E2E(train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx):
     training_args = TrainingArguments(
         output_dir=constants.OUTPUT_DIR_E2E+"_" +
         results["TARGET"]+"_"+str(cross_idx),
@@ -127,7 +127,7 @@ def get_trainer_E2E(train_data, test_data, tokenizer, results, cross_idx):
     compute_metrics_E2E_fcn = compute_metrics_E2E(results, cross_idx)
 
     trainer = Trainer(
-        model_init=create_model_E2E,
+        model_init=create_model_E2E(MODEL_TYPE),
         args=training_args,
         train_dataset=train_data,
         eval_dataset=test_data,

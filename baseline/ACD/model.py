@@ -4,15 +4,15 @@ import constants
 import torch
 
 
-def create_model_ACD():
+def create_model_ACD(MODEL_TYPE):
     return AutoModelForSequenceClassification.from_pretrained(
-        pretrained_model_name_or_path=constants.MODEL_NAME_ACD,
+        pretrained_model_name_or_path=constants.MODEL_NAME_ACD + MODEL_TYPE,
         num_labels=len(constants.ASPECT_CATEGORIES),
         problem_type="multi_label_classification"
     ).to(torch.device(constants.DEVICE))
 
 
-def get_trainer_ACD(train_data, test_data, tokenizer, results, cross_idx):
+def get_trainer_ACD(train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx):
     # Define Arguments
     training_args = TrainingArguments(
         output_dir=constants.OUTPUT_DIR_ACD+"_" +
@@ -37,7 +37,7 @@ def get_trainer_ACD(train_data, test_data, tokenizer, results, cross_idx):
     compute_metrics_ACD_fcn = compute_metrics_ACD(results, cross_idx)
 
     trainer = Trainer(
-        model_init=create_model_ACD,
+        model_init=create_model_ACD(MODEL_TYPE),
         args=training_args,
         train_dataset=train_data,
         eval_dataset=test_data,

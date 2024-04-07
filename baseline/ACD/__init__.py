@@ -10,7 +10,7 @@ import shutil
 import time
 
 
-def train_ACD_model(TARGET, train_dataset, test_dataset):
+def train_ACD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
     results = {
         "TARGET": TARGET,
         "single_split_results": []
@@ -21,7 +21,7 @@ def train_ACD_model(TARGET, train_dataset, test_dataset):
     n_samples_test = []
     log_history = {}
 
-    tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_ACD)
+    tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_ACD + MODEL_TYPE)
 
     metrics_prefixes = ["accuracy", "hamming_loss", "f1_macro", "f1_micro", "f1_weighted"]
     metrics_total = {f"{m}": [] for m in metrics_prefixes}
@@ -38,7 +38,7 @@ def train_ACD_model(TARGET, train_dataset, test_dataset):
 
         # Train Model
         trainer = get_trainer_ACD(
-            train_data, test_data, tokenizer, results, cross_idx)
+            train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx)
         trainer.train()
 
         # save log history

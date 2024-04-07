@@ -12,7 +12,7 @@ ASPECT_CATEGORY_POLARITIES = [
 EVALUATE_AFTER_EPOCH = False
 
 # ------------------ ACD ------------------
-MODEL_NAME_ACD = "deepset/gbert-large"
+MODEL_NAME_ACD = "deepset/gbert-"
 LEARNING_RATE_ACD = 2e-5
 BATCH_SIZE_ACD = 16
 MAX_TOKENS_ACD = 256
@@ -20,7 +20,7 @@ OUTPUT_DIR_ACD = "outputs/output_ACD"
 EPOCHS_ACD = 3
 
 # ------------------ ACSA ------------------
-MODEL_NAME_ACSA = "deepset/gbert-large"
+MODEL_NAME_ACSA = "deepset/gbert-"
 LEARNING_RATE_ACSA = 2e-5
 BATCH_SIZE_ACSA = 16
 MAX_TOKENS_ACSA = 256
@@ -42,7 +42,7 @@ ID_TO_LABEL_E2E = {0: 'B_POSITIVE',
                    4: 'I_NEUTRAL',
                    5: 'I_NEGATIVE'}
 
-MODEL_NAME_E2E = "deepset/gbert-large"
+MODEL_NAME_E2E = "deepset/gbert-"
 MAX_TOKENS_E2E = 256
 BATCH_SIZE_E2E = 16
 STEPS_E2E = 1500
@@ -52,7 +52,7 @@ WEIGHT_DECAY_E2E = 0.01
 
 # ------------------ TASD ------------------
 
-MODEL_NAME_TASD = "t5-large"
+MODEL_NAME_TASD = "t5-"
 MAX_TOKENS_TASD = 256
 BATCH_SIZE_TASD = 16
 LEARNING_RATE_TASD = 3e-4
