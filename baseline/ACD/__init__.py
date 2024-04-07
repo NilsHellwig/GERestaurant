@@ -38,7 +38,7 @@ def train_ACD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
         # Train Model
         trainer = get_trainer_ACD(
-            train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx)
+            train_data, test_data, tokenizer, results, cross_idx)
         trainer.train()
 
         # save log history
