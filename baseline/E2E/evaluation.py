@@ -93,14 +93,14 @@ def calculate_f1_micro(metrics):
     return divide(2 * (precision_total * recall_total), (precision_total + recall_total))
 
 
-def compute_metrics_E2E(results, cross_idx):
+def compute_metrics_E2E(results):
 
     def compute_metrics(p):
         predictions, true_labels = p
         predictions = predictions[:, :, :-1]
         true_labels = true_labels[:, :, :-1]
 
-        save_pred_and_labels(predictions, true_labels, results, cross_idx)
+        save_pred_and_labels(predictions, true_labels, results)
         predictions = np.where(predictions > 0, np.ones(
             predictions.shape), np.zeros(predictions.shape))
 
