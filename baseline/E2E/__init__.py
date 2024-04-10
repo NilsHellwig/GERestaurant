@@ -10,6 +10,7 @@ import time
 
 
 def train_E2E_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
+    results = {"TARGET": TARGET}
     tokenizer = AutoTokenizer.from_pretrained(
         constants.MODEL_NAME_E2E + MODEL_TYPE)
 
@@ -23,7 +24,7 @@ def train_E2E_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
     # in order to save the prediction and labels for each split, results will also be handed over
     trainer = get_trainer_E2E(
-        train_dataset, test_dataset, MODEL_TYPE, tokenizer)
+        train_dataset, test_dataset, MODEL_TYPE, tokenizer, results)
     trainer.train()
 
     # save log history
@@ -43,7 +44,7 @@ def train_E2E_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
     runtime = time.time() - start_time
 
-    results = eval_metrics
+    results.update(eval_metrics)
     results["TARGET"] = TARGET
 
     results["runtime"] = runtime

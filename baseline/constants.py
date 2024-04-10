@@ -1,7 +1,7 @@
 # ------------------ General Settings ------------------
 N_FOLDS = 5
 SPLIT_LOOP = [0, 1, 2, 3, 4, 0, 1, 2, 3, 4]
-RANDOM_SEED = 50
+RANDOM_SEED = 42
 DEVICE = "cuda"
 ASPECT_CATEGORIES = ["GENERAL-IMPRESSION",
                      "FOOD", "SERVICE", "AMBIENCE", "PRICE"]
