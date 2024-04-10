@@ -10,6 +10,7 @@ import shutil
 
 
 def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
+    results = {"TARGET": TARGET}
     tokenizer = AutoTokenizer.from_pretrained(
         constants.MODEL_NAME_ACSA + MODEL_TYPE)
 
@@ -23,7 +24,8 @@ def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
     n_samples_test = len(test_data)
 
     # Train Model
-    trainer = get_trainer_ACSA(train_data, test_data, tokenizer, TARGET)
+    trainer = get_trainer_ACSA(
+        train_data, test_data, tokenizer, TARGET, results)
     trainer.train()
 
     # save log history
@@ -42,7 +44,7 @@ def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
     runtime = time.time() - start_time
 
-    results = eval_metrics
+    results.update(eval_metrics)
 
     results["TARGET"] = TARGET
     results["eval_loss"] = loss
