@@ -10,6 +10,7 @@ import time
 
 
 def train_TASD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
+    results = {"TARGET": TARGET}
 
     start_time = time.time()
 
@@ -32,7 +33,7 @@ def train_TASD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
                                       [encode_example(example, tokenizer)["labels"] for example in test_data])
 
     # Train Model
-    trainer = get_trainer_TASD(train_data, test_data, MODEL_TYPE, tokenizer)
+    trainer = get_trainer_TASD(train_data, test_data, MODEL_TYPE, tokenizer, results)
     trainer.train()
 
     # save log history
