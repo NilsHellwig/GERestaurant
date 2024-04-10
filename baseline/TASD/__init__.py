@@ -44,7 +44,7 @@ def train_TASD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
     print(f"Eval Metrics:", eval_metrics)
 
     # Save Evaluation of Split
-    results = eval_metrics
+    results.update(eval_metrics)
 
     loss = eval_metrics["eval_loss"]
 
