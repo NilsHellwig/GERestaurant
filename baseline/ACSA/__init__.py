@@ -25,7 +25,7 @@ def train_ACSA_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
 
     # Train Model
     trainer = get_trainer_ACSA(
-        train_data, test_data, tokenizer, TARGET, results)
+        train_data, test_data, tokenizer, results)
     trainer.train()
 
     # save log history
