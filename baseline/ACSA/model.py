@@ -15,7 +15,7 @@ def create_model_ACSA():
     ).to(torch.device(constants.DEVICE))
 
 
-def get_trainer_ACSA(train_data, test_data, tokenizer):
+def get_trainer_ACSA(train_data, test_data, tokenizer, TARGET):
     # Define Arguments
     training_args = TrainingArguments(
         output_dir=constants.OUTPUT_DIR_ACSA,
