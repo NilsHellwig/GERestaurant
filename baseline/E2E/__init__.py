@@ -10,85 +10,47 @@ import time
 
 
 def train_E2E_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
-    results = {
-        "TARGET": TARGET,
-        "single_split_results": []
-    }
-
-    metrics_classwise_prefix = [
-        "accuracy", "precision", "recall", "f1", "tp", "tn", "fp", "fn"]
-    metrics_total_prefix = ["f1_micro", "f1_macro", "precision",
-                            "recall", "accuracy", "f1", "tp", "tn", "fp", "fn"]
-    metrics_total = {f"{metric}": [] for metric in metrics_total_prefix}
-    metrics_total.update({f"{metric}_{ac}": []
-                         for metric in metrics_classwise_prefix for ac in constants.POLARITIES})
-
-    eval_loss = []
-    n_samples_train = []
-    n_samples_test = []
-    log_history = {}
-
-    tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_E2E + MODEL_TYPE)
+    tokenizer = AutoTokenizer.from_pretrained(
+        constants.MODEL_NAME_E2E + MODEL_TYPE)
 
     start_time = time.time()
 
-    for cross_idx in range(constants.N_FOLDS):
-        # Load Data
-        train_data = train_dataset[cross_idx]
-        test_data = test_dataset[cross_idx]
+    train_dataset, test_dataset = get_preprocessed_data_E2E(
+        train_dataset, test_dataset, tokenizer)
 
-        train_data, test_data = get_preprocessed_data_E2E(
-            train_data, test_data, tokenizer)
+    n_samples_train = len(train_dataset)
+    n_samples_test = len(test_dataset)
 
-        n_samples_train.append(len(train_data))
-        n_samples_test.append(len(test_data))
+    # in order to save the prediction and labels for each split, results will also be handed over
+    trainer = get_trainer_E2E(
+        train_dataset, test_dataset, MODEL_TYPE, tokenizer)
+    trainer.train()
 
-        # in order to save the prediction and labels for each split, results will also be handed over
-        trainer = get_trainer_E2E(
-            train_data, test_data, MODEL_TYPE, tokenizer, results, cross_idx)
-        trainer.train()
+    # save log history
+    log_history = trainer.state.log_history
 
-        # save log history
-        log_history[cross_idx] = trainer.state.log_history
+    # Save Evaluation of Test Data
+    eval_metrics = trainer.evaluate(test_dataset)
+    print(f"Eval Metrics:", eval_metrics)
 
-        # Save Evaluation of Test Data
-        eval_metrics = trainer.evaluate(test_data)
-        print(f"Split {cross_idx}:", eval_metrics)
+    eval_loss = eval_metrics["eval_loss"]
 
-        # Save Evaluation of Split
-        results["single_split_results"].append(eval_metrics)
+    # remove model output
+    path_output = constants.OUTPUT_DIR_E2E + "_"+TARGET
+    shutil.rmtree(path_output)
 
-        for m in metrics_total_prefix:
-            metrics_total[m].append(eval_metrics[f"eval_{m}"])
-
-        for polarity in constants.POLARITIES:
-            for classwise_metric in metrics_classwise_prefix:
-                metrics_total[f"{classwise_metric}_{polarity}"].append(
-                    eval_metrics[f"eval_{classwise_metric}_{polarity}"])
-
-        eval_loss.append(eval_metrics["eval_loss"])
-
-        # remove model output
-        path_output = constants.OUTPUT_DIR_E2E + \
-            "_"+results["TARGET"]+"_"+str(cross_idx)
-        shutil.rmtree(path_output)
-
-        subprocess.call("rm -rf /home/mi/.local/share/Trash", shell=True)
+    subprocess.call("rm -rf /home/mi/.local/share/Trash", shell=True)
 
     runtime = time.time() - start_time
 
-    results.update({f"eval_{m}": np.mean(
-        metrics_total[f"{m}"]) for m in metrics_total_prefix})
-    results.update({f"eval_{m}_{polarity}": np.mean(
-        metrics_total[f"{m}_{polarity}"]) for m in metrics_classwise_prefix for polarity in constants.POLARITIES})
+    results = eval_metrics
+    results["TARGET"] = TARGET
 
     results["runtime"] = runtime
     results["runtime_formatted"] = format_seconds_to_time_string(runtime)
-    results["eval_loss"] = np.mean(eval_loss)
+    results["eval_loss"] = eval_loss
     results["n_samples_train"] = n_samples_train
-    results["n_samples_train_mean"] = np.mean(n_samples_train)
     results["n_samples_test"] = n_samples_test
-    results["n_samples_test_mean"] = np.mean(n_samples_test)
     results["log_history"] = log_history
 
     return results

@@ -15,11 +15,10 @@ def create_model_ACSA():
     ).to(torch.device(constants.DEVICE))
 
 
-def get_trainer_ACSA(train_data, test_data, tokenizer, results, cross_idx):
+def get_trainer_ACSA(train_data, test_data, tokenizer):
     # Define Arguments
     training_args = TrainingArguments(
-        output_dir=constants.OUTPUT_DIR_ACSA+"_" +
-        results["TARGET"]+"_"+str(cross_idx),
+        output_dir=constants.OUTPUT_DIR_ACSA,
         learning_rate=constants.LEARNING_RATE_ACSA,
         num_train_epochs=constants.EPOCHS_ACSA,
         per_device_train_batch_size=constants.BATCH_SIZE_ACSA,
@@ -37,7 +36,7 @@ def get_trainer_ACSA(train_data, test_data, tokenizer, results, cross_idx):
         seed=constants.RANDOM_SEED
     )
 
-    compute_metrics_ACSA_fcn = compute_metrics_ACSA(results, cross_idx)
+    compute_metrics_ACSA_fcn = compute_metrics_ACSA()
 
     trainer = Trainer(
         model_init=create_model_ACSA,

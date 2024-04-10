@@ -4,11 +4,11 @@ from scipy.special import expit
 import constants
 
 
-def compute_metrics_ACD(results, cross_idx):
+def compute_metrics_ACD(results):
 
     def compute_metrics(eval_pred):
         predictions, lab = eval_pred
-        save_pred_and_labels(predictions, lab, results, cross_idx)
+        save_pred_and_labels(predictions, lab, results)
         predictions = (expit(predictions) > 0.5)
         labels = [l == 1 for l in lab]
         accuracy = accuracy_score(labels, predictions)

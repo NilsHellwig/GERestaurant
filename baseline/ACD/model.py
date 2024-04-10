@@ -14,11 +14,11 @@ def create_model_ACD():
     ).to(torch.device(constants.DEVICE))
 
 
-def get_trainer_ACD(train_data, test_data, tokenizer, results, cross_idx):
+def get_trainer_ACD(train_data, test_data, tokenizer, results):
     # Define Arguments
     training_args = TrainingArguments(
         output_dir=constants.OUTPUT_DIR_ACD+"_" +
-        results["TARGET"]+"_"+str(cross_idx),
+        results["TARGET"],
         learning_rate=constants.LEARNING_RATE_ACD,
         num_train_epochs=constants.EPOCHS_ACD,
         per_device_train_batch_size=constants.BATCH_SIZE_ACD,
@@ -36,7 +36,7 @@ def get_trainer_ACD(train_data, test_data, tokenizer, results, cross_idx):
         seed=constants.RANDOM_SEED
     )
 
-    compute_metrics_ACD_fcn = compute_metrics_ACD(results, cross_idx)
+    compute_metrics_ACD_fcn = compute_metrics_ACD(results)
 
     trainer = Trainer(
         model_init=create_model_ACD,

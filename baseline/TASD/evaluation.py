@@ -6,14 +6,14 @@ import numpy as np
 import constants
 
 
-def compute_metrics_TASD(results, cross_idx, MODEL_TYPE):
+def compute_metrics_TASD(results, MODEL_TYPE):
     def compute_metrics(eval_pred):
         # Evtl später übertragen
         tokenizer = AutoTokenizer.from_pretrained(constants.MODEL_NAME_TASD + MODEL_TYPE)
         metric = load_metric("rouge")
 
         predictions, labels = eval_pred
-        save_pred_and_labels(predictions, labels, results, cross_idx)
+        save_pred_and_labels(predictions, labels, results)
 
         # Preprocess predictions
         decoded_preds, decoded_labels, pred_tuples, labels_tuples = preprocess_for_metrics(

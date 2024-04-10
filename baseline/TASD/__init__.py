@@ -10,97 +10,56 @@ import time
 
 
 def train_TASD_model(TARGET, MODEL_TYPE, train_dataset, test_dataset):
-    results_meta = {
-        "TARGET": TARGET,
-        "single_split_results": []
-    }
-
-    results = results_meta.copy()
-
-    loss = []
-    n_samples_train = []
-    n_samples_test = []
-    metrics_models = []
-    log_history = {}
 
     start_time = time.time()
 
     tokenizer = T5Tokenizer.from_pretrained(constants.MODEL_NAME_TASD + MODEL_TYPE)
 
-    for cross_idx in range(constants.N_FOLDS):
-        # Load Data
-        train_data = train_dataset[cross_idx]
-        test_data = test_dataset[cross_idx]
+    # Load Data
+    train_data = train_dataset
+    test_data = test_dataset
 
-        n_samples_train.append(len(train_data))
-        n_samples_test.append(len(test_data))
+    n_samples_train = len(train_data)
+    n_samples_test = len(test_data)
 
-        train_data = CustomDatasetTASD([encode_example(example, tokenizer)["input_ids"] for example in train_data],
+    train_data = CustomDatasetTASD([encode_example(example, tokenizer)["input_ids"] for example in train_data],
                                        [encode_example(example, tokenizer)["attention_mask"]
                                            for example in train_data],
                                        [encode_example(example, tokenizer)["labels"] for example in train_data])
-        test_data = CustomDatasetTASD([encode_example(example, tokenizer)["input_ids"] for example in test_data],
+    test_data = CustomDatasetTASD([encode_example(example, tokenizer)["input_ids"] for example in test_data],
                                       [encode_example(example, tokenizer)["attention_mask"]
                                        for example in test_data],
                                       [encode_example(example, tokenizer)["labels"] for example in test_data])
 
-        # Train Model
-        trainer = get_trainer_TASD(
-            train_data, test_data, MODEL_TYPE, tokenizer, results_meta, cross_idx)
-        trainer.train()
+    # Train Model
+    trainer = get_trainer_TASD(train_data, test_data, MODEL_TYPE, tokenizer)
+    trainer.train()
 
-        # save log history
-        log_history[cross_idx] = trainer.state.log_history
+    # save log history
+    log_history = trainer.state.log_history
 
-        # Save Evaluation of Test Data
-        eval_metrics = trainer.evaluate(test_data)
-        print(f"Split {cross_idx}:", eval_metrics)
+    # Save Evaluation of Test Data
+    eval_metrics = trainer.evaluate(test_data)
+    print(f"Eval Metrics:", eval_metrics)
 
-        # Save Evaluation of Split
-        results["single_split_results"].append(eval_metrics)
+    # Save Evaluation of Split
+    results = eval_metrics
 
-        # Save Metrics for fold
-        for metric in eval_metrics.keys():
-            if metric not in results:
-                results[metric] = []
-                metrics_models.append(metric)
+    loss = eval_metrics["eval_loss"]
 
-            results[metric].append(eval_metrics[metric])
+    path_output = constants.OUTPUT_DIR_TASD + "_" + results["TARGET"]
+    shutil.rmtree(path_output)
 
-        for comb in [(ac, pol) for ac in constants.ASPECT_CATEGORIES for pol in constants.POLARITIES]:
-            aspect_category = comb[0]
-            polarity = comb[1]
-            for metric in ["n_examples", "f1", "recall", "precision", "accuracy"]:
-                if metric+"_"+aspect_category+"_"+polarity not in results:
-                    results["eval_"+metric+"_" +
-                            aspect_category+"_"+polarity] = []
-                    metrics_models.append(
-                        "eval_" + metric+"_"+aspect_category+"_"+polarity)
-
-                results["eval_"+metric+"_"+aspect_category+"_"+polarity].append(
-                    eval_metrics["eval_" + metric+"_"+aspect_category+"_"+polarity])
-
-        loss.append(eval_metrics["eval_loss"])
-
-        path_output = constants.OUTPUT_DIR_TASD + \
-            "_" + results["TARGET"]+str(cross_idx)
-        shutil.rmtree(path_output)
-
-        subprocess.call("rm -rf /home/mi/.local/share/Trash", shell=True)
+    subprocess.call("rm -rf /home/mi/.local/share/Trash", shell=True)
 
     runtime = time.time() - start_time
 
-    results["eval_loss"] = np.mean(loss)
-
-    for metric in metrics_models:
-        results[metric] = np.mean(results[metric])
+    results["eval_loss"] = loss
 
     results["runtime"] = runtime
     results["runtime_formatted"] = format_seconds_to_time_string(runtime)
     results["n_samples_train"] = n_samples_train
-    results["n_samples_train_mean"] = np.mean(n_samples_train)
     results["n_samples_test"] = n_samples_test
-    results["n_samples_test_mean"] = np.mean(n_samples_test)
     results["log_history"] = log_history
 
     return results
