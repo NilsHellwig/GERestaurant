@@ -18,3 +18,4 @@ rouge-score==0.1.2
 more_itertools==10.1.0
 llama-cpp-python==0.2.19
 python-Levenshtein==0.24.0
+sentencepiece==0.2.0
