@@ -9,3 +9,4 @@ comparison with semeval/SemEval/EN_REST_SB1_TEST.xml.gold
 
 data/test_dataset.json
 data/train_dataset.json
+data/dataset_filtered.json
