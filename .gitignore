@@ -1,0 +1,11 @@
+
+*.pyc
+.DS_Store
+comparison with semeval/SemEval/ABSA16_Restaurants_Train_SB1_v2 2.xml
+comparison with semeval/SemEval/ABSA-15_Restaurants_Train_Final.xml
+data/check.ipynb
+comparison with semeval/SemEval/ABSA15_Restaurants_Test.xml
+comparison with semeval/SemEval/EN_REST_SB1_TEST.xml.gold
+
+data/test_dataset.json
+data/train_dataset.json
